@@ -1,4 +1,11 @@
-# DIGOS — Intelligent Agent System
+# DIGOS Testing — Testing Ground
+
+This is the **testing clone** of DIGOS.
+
+All tests run here first. Fixes are applied here first,
+then ported to the main `digos` repository.
+
+**Main repo:** https://github.com/anthony-x507/digos
 
 Versión 0.3 — Fase 7: Producción
 
