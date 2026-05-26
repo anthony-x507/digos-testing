@@ -1,0 +1,8 @@
+# DIGOS dependencies (stdlib only — no external deps for runtime)
+# These are only for development and CI testing
+
+pytest>=7.0
+pytest-cov>=4.0
+flake8>=6.0
+mypy>=1.0
+bandit>=1.7
