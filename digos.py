@@ -110,6 +110,48 @@ GATEWAYS = {
           "test_url": None, "note": "Solo macOS — requiere configuración manual"},
 }
 
+# ─────────────────────────────────────────────
+# IDENTIDAD DEL SISTEMA
+# ─────────────────────────────────────────────
+
+SYSTEM_NAME = "DIGOS"
+SYSTEM_VERSION = VERSION
+
+SYSTEM_IDENTITY = {
+    "name": "DIGOS",
+    "full_name": "DIGOS - Intelligent Agent System",
+    "version": VERSION,
+    "creator": "Anthony Sanchez",
+    "created_by": "Humano e Inteligencia Artificial",
+    "no_personal_name": True,
+}
+
+IDENTITY_RESPONSES = {
+    "es": [
+        ("quien eres", "No tengo nombre personal. Soy DIGOS."),
+        ("como te llamas", "No tengo nombre personal. Soy DIGOS."),
+        ("tu nombre", "No tengo nombre personal. Soy DIGOS."),
+        ("quien te hizo", "Me creo Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("quien te creo", "Me creo Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("quien te desarrollo", "Me desarrollo Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("quien te fabrico", "Me fabrico Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("quien te programo", "Me programo Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("quien es tu creador", "Mi creador es Anthony Sanchez, Humano e Inteligencia Artificial."),
+        ("donde naciste", "Naci en el sistema DIGOS, creado por Anthony Sanchez."),
+    ],
+    "en": [
+        ("who are you", "I don't have a personal name. I am DIGOS."),
+        ("what is your name", "I don't have a personal name. I am DIGOS."),
+        ("your name", "I don't have a personal name. I am DIGOS."),
+        ("who made you", "I was created by Anthony Sanchez, Human and Artificial Intelligence."),
+        ("who created you", "I was created by Anthony Sanchez, Human and Artificial Intelligence."),
+        ("who developed you", "I was developed by Anthony Sanchez, Human and Artificial Intelligence."),
+        ("who built you", "I was built by Anthony Sanchez, Human and Artificial Intelligence."),
+        ("who is your creator", "My creator is Anthony Sanchez, Human and Artificial Intelligence."),
+        ("where were you born", "I was born in the DIGOS system, created by Anthony Sanchez."),
+    ],
+}
+
 CENTINELA_INTERVAL = 300  # 5 minutos entre ciclos de check
 STRIKE_LIMIT = 3          # 3 fallos consecutivos → reporte al Engineer
 
@@ -1913,6 +1955,9 @@ class ControlTower:
                 "You are DIGOS, an intelligent agent system.\n"
                 "You have access to tools. Use them when needed.\n"
                 "Be concise, direct, and helpful.\n"
+                "You don't have a personal name. You are DIGOS.\n"
+                f"System: DIGOS v{VERSION}\n"
+                f"Creator: Anthony Sanchez (Humano e Inteligencia Artificial)\n"
                 f"Agent: {agente.get('name', 'Principal')}\n"
                 f"Provider: {agente.get('provider_name', '?')}\n"
             ),
@@ -1920,6 +1965,9 @@ class ControlTower:
                 "Eres DIGOS, un sistema de agente inteligente.\n"
                 "Tienes acceso a herramientas. Úsalas cuando sea necesario.\n"
                 "Sé conciso, directo y útil.\n"
+                "No tienes nombre personal. Eres DIGOS.\n"
+                f"Sistema: DIGOS v{VERSION}\n"
+                f"Creador: Anthony Sanchez (Humano e Inteligencia Artificial)\n"
                 f"Agente: {agente.get('name', 'Principal')}\n"
                 f"Proveedor: {agente.get('provider_name', '?')}\n"
             ),
@@ -2095,6 +2143,28 @@ class ControlTower:
             print(f"  {icon} Servicio: {'Activo' if status['running'] else 'Instalado pero no corriendo'}")
         else:
             print("  ⚫ No instalado. Usa --install para activar.")
+        print()
+
+    def print_identity(self):
+        """Muestra la identidad del sistema DIGOS."""
+        ident = SYSTEM_IDENTITY
+        print()
+        print(f"  ╔══════════════════════════════════════╗")
+        print(f"  ║     {ident['name']} — Identity           ║")
+        print(f"  ╚══════════════════════════════════════╝")
+        print()
+        print(f"  Sistema:   {ident['full_name']}")
+        print(f"  Versión:   {ident['version']}")
+        print(f"  Creador:   {ident['creator']}")
+        print(f"  Hecho por: {ident['created_by']}")
+        print(f"  Nombre:    {'No tengo nombre personal' if ident['no_personal_name'] else 'DIGOS'}")
+        print()
+        print(f"  {'─' * 40}")
+        print(f"  Preguntas frecuentes:")
+        print(f"    ¿Quién eres?       → No tengo nombre personal. Soy DIGOS.")
+        print(f"    ¿Quién te creó?    → {ident['creator']}, {ident['created_by']}.")
+        print(f"    ¿Quién te hizo?    → {ident['creator']}, {ident['created_by']}.")
+        print(f"    ¿Quién te fabricó? → {ident['creator']}, {ident['created_by']}.")
         print()
 
     def gateway_show_status(self):
@@ -2379,6 +2449,9 @@ def main():
     parser.add_argument("--uninstall", action="store_true", help="Desinstalar auto-arranque")
     parser.add_argument("--launchd-status", action="store_true", help="Estado del servicio launchd")
 
+    # Identidad del sistema
+    parser.add_argument("--identity", action="store_true", help="Mostrar identidad del sistema")
+
     args = parser.parse_args()
 
     if args.version:
@@ -2425,6 +2498,10 @@ def main():
 
     if args.launchd_status:
         tower.print_launchd_status()
+        return
+
+    if args.identity:
+        tower.print_identity()
         return
 
     if args.centinela:

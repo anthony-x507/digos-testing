@@ -256,6 +256,24 @@ class AIAgent:
         # Security Gate
         self._gate = SecurityGate()
 
+        # Identity responses (from DIGOS system)
+        self._identity_responses = []
+        try:
+            from digos import IDENTITY_RESPONSES
+            self._identity_responses = IDENTITY_RESPONSES
+        except Exception:
+            self._identity_responses = {"es": [], "en": []}
+
+    def _check_identity_question(self, message: str) -> str:
+        """Detecta si el mensaje pregunta por la identidad del sistema.
+        Responde sin llamar al LLM para ahorrar tiempo y tokens."""
+        msg_lower = message.lower().strip()
+        for lang, pairs in self._identity_responses.items():
+            for question, answer in pairs:
+                if question in msg_lower:
+                    return answer
+        return ""
+
     def process_message(self, user_message: str) -> str:
         """Procesa un mensaje del usuario. Retorna la respuesta final."""
         # ── Input Gate: revisar mensaje antes de procesar ──
@@ -264,6 +282,14 @@ class AIAgent:
             return gate_result["response"]
 
         clean_msg = gate_result["clean_message"]
+
+        # ── Identity Check: responder sin LLM si pregunta quién eres ──
+        identity_response = self._check_identity_question(clean_msg)
+        if identity_response:
+            self._messages.append({"role": "user", "content": clean_msg})
+            self._messages.append({"role": "assistant", "content": identity_response})
+            return identity_response
+
         self._messages.append({"role": "user", "content": clean_msg})
 
         iterations = 0
